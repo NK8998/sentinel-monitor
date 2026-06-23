@@ -31,7 +31,7 @@ type SiteConfig struct {
 type AppConfig struct {
     sites []SiteConfig;
     timeout int;
-    webhook_url string;
+    webhook_url *string;
 };
 
 
@@ -70,7 +70,7 @@ func loadConfig(filePath string) AppConfig {
     appConfig := AppConfig {
         sites: sites,
         timeout: config.Settings.Timeout,
-        webhook_url: config.Settings.AlertWebhook,
+        webhook_url: &config.Settings.AlertWebhook,
 
     }
 
@@ -79,9 +79,7 @@ func loadConfig(filePath string) AppConfig {
 }
 
 func main(){
-
-    fmt.Println("Hello, World!");
     config := loadConfig("targets.yaml");
-    fmt.Printf("Retrieved sites are: %+v\n", config.sites);
+    fmt.Printf("Retrieved this: %+v\n", config);
 }
 
