@@ -3,7 +3,7 @@ package main;
 import ( 
     "fmt"
     "os"
-    "io"  
+    "io"
     "log"
     "gopkg.in/yaml.v3"
 );
@@ -11,12 +11,12 @@ import (
 type SiteField struct{ 
      Name string `yaml:"name"`;
      URL  string `yaml:"url"`;
-}
+};
 
 type Settings struct {
     Timeout      int    `yaml:"timeout"`;
     AlertWebhook string `yaml:"alert_webhook"`;
-} 
+};
 
 type Config struct {
     Settings Settings `yaml:"settings"`;
@@ -31,11 +31,11 @@ type SiteConfig struct {
 type AppConfig struct {
     sites []SiteConfig;
     timeout int;
-    webhook_url *string;
+    webhook_url string;
 };
 
 
-func loadConfig(filePath string){
+func loadConfig(filePath string) AppConfig {
    
     var config Config;
 
@@ -51,22 +51,37 @@ func loadConfig(filePath string){
         log.Fatal(err);
     }
 
-//    for index, value := range data {
-//      fmt.Printf("Index: %d, Byte: %d, Char: %c\n", index, value, value)
-//}
-
     yamlErr := yaml.Unmarshal(data, &config);
     if yamlErr != nil {
         log.Fatalf("Error parsing YAML: %v", yamlErr);
     }
 
-    fmt.Printf("Retrieved sites are: %+v\n", config.Sites);
+    var sites []SiteConfig;
+
+    for _, v := range config.Sites {
+        siteConfig := SiteConfig {
+            name: v.Name,
+            url: v.URL,
+        };
+
+        sites = append(sites, siteConfig);
+    }
+
+    appConfig := AppConfig {
+        sites: sites,
+        timeout: config.Settings.Timeout,
+        webhook_url: config.Settings.AlertWebhook,
+
+    }
+
+    return appConfig;
 
 }
 
 func main(){
 
     fmt.Println("Hello, World!");
-    loadConfig("targets.yaml");
+    config := loadConfig("targets.yaml");
+    fmt.Printf("Retrieved sites are: %+v\n", config.sites);
 }
 
